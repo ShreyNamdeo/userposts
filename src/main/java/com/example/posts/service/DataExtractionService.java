@@ -1,11 +1,13 @@
 package com.example.posts.service;
 
+import com.example.posts.config.ApplicationConfig;
 import com.example.posts.dtos.UserPostsDto;
 import com.example.posts.dtos.postDtos.Post;
 import com.example.posts.dtos.userDtos.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +27,9 @@ public class DataExtractionService {
     @Value("${url.posts}")
     private String postsBaseUrl;
 
+    @Autowired
+    ApplicationConfig applicationConfig;
+
     public List<UserPostsDto> getAllUsersCombinedWithPosts(List<User> users, List<Post> posts) {
         List<UserPostsDto> userPostResp = new ArrayList<>();
         users.forEach(user -> {
@@ -37,7 +42,7 @@ public class DataExtractionService {
     }
 
     public List<User> getAllUsers(){
-        return getUsersFromResp(WebClient.create().get().uri(usersBaseUrl).retrieve().bodyToMono(JsonNode.class).block());
+        return getUsersFromResp(applicationConfig.getClient().get().uri(usersBaseUrl).retrieve().bodyToMono(JsonNode.class).block());
     }
 
     private List<User> getUsersFromResp(JsonNode response) {
@@ -57,7 +62,7 @@ public class DataExtractionService {
     }
 
     public List<Post> getAllPosts(){
-        return getPostsFromResponse(WebClient.create().get().uri(postsBaseUrl).retrieve().bodyToMono(JsonNode.class).block());
+        return getPostsFromResponse(applicationConfig.getClient().get().uri(postsBaseUrl).retrieve().bodyToMono(JsonNode.class).block());
     }
 
     private List<Post> getPostsFromResponse(JsonNode response) {

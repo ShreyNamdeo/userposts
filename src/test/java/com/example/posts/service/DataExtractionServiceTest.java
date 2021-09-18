@@ -1,5 +1,6 @@
 package com.example.posts.service;
 
+import com.example.posts.config.ApplicationConfig;
 import com.example.posts.dtos.postDtos.Post;
 import com.example.posts.dtos.userDtos.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +10,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,8 +29,11 @@ public class DataExtractionServiceTest {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
-    @MockBean
+    @InjectMocks
     DataExtractionService dataExtractionService;
+
+    @Mock
+    ApplicationConfig applicationConfig;
 
     List<Post> posts = new ArrayList<>();
     List<User> users = new ArrayList<>();
@@ -37,6 +41,7 @@ public class DataExtractionServiceTest {
     @BeforeEach
     void setUp(){
         client = WebClient.create(mockWebServer.url("/").toString());
+        Mockito.when(applicationConfig.getClient()).thenReturn(client);
         Post post1 = new Post();
         post1.setId(1);
         post1.setUserId(1);
